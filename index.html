@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PHONE CARE</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#04070f">
+<link rel="icon" href="icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#04070f;--p:#0a1226;--p2:#0e1a38;--line:#1b2c57;--t:#e8eefc;--m:#8a9bc4;--blue:#3b82f6;--cy:#38bdf8;--ok:#34d399;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 500px at 50% -10%,#0b1f4d,var(--bg) 60%) fixed;color:var(--t);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.w{max-width:720px;margin:0 auto;padding:16px 16px 96px}
+h2{font-size:1.2rem;margin:8px 0 12px}h3{margin:0}p{margin:.3rem 0}
+.m{color:var(--m);font-size:.9rem}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:2px}
+.logo small{display:block;font-weight:500;letter-spacing:.3px;color:var(--m);font-size:.7rem}
+header{display:flex;justify-content:space-between;align-items:center;padding:6px 0 14px}
+.c{background:linear-gradient(180deg,var(--p2),var(--p));border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.r{display:flex;gap:10px;align-items:center;justify-content:space-between}
+label{display:block;font-size:.85rem;color:var(--m);margin:12px 0 4px}
+input[type=text],input[type=email],input[type=password]{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#050b1b;color:var(--t);font:inherit}
+input:focus,button:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:11px 16px;background:var(--blue);color:#fff;font-weight:600;min-height:44px}
+button.g{background:transparent;border:1px solid var(--line);color:var(--t)}
+button.d{background:transparent;border:1px solid #7f1d1d;color:var(--bad)}
+.b{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.bar{height:10px;background:#050b1b;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%}
+.chip{padding:2px 10px;border-radius:99px;font-size:.78rem;border:1px solid var(--line);color:var(--m)}.chip.on{color:var(--ok);border-color:#14532d}
+.perm{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.sw{position:relative;width:50px;height:28px;flex:none;margin:0}.sw input{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;z-index:2;cursor:pointer}
+.sw span{position:absolute;inset:0;background:#1b2c57;border-radius:99px;transition:.2s}
+.sw span:after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+span{background:var(--blue)}.sw input:checked+span:after{transform:translateX(22px)}
+nav{position:fixed;left:0;right:0;bottom:0;background:#050b1bee;border-top:1px solid var(--line);display:flex;justify-content:center;gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{background:transparent;color:var(--m);flex:1;max-width:200px}nav button.a{background:var(--p2);color:#fff;border:1px solid var(--line)}
+.ban{background:#052e1b;border:1px solid #14532d;color:#a7f3d0;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.9rem}
+.err{color:var(--bad);font-size:.9rem;min-height:1.2em;margin-top:8px}
+.mo{position:fixed;inset:0;background:#000a;display:flex;align-items:flex-end;justify-content:center;padding:12px;z-index:50}.mo .c{max-width:520px;width:100%;margin:0}
+ul{padding-left:18px;margin:6px 0}a{color:var(--cy)}
+</style>
+</head>
+<body>
+<div class="w" id="app"></div>
+<script>
+// 1) Paste your Supabase values here (see README.md)
+let SB_URL='',SB_KEY='';try{SB_URL=localStorage.getItem('pc_url')||'';SB_KEY=localStorage.getItem('pc_key')||''}catch(e){}
+function saveCfg(){try{localStorage.setItem('pc_url',$('#su').value.trim());localStorage.setItem('pc_key',$('#sk').value.trim())}catch(e){}location.reload()}
+
+const LOGO='<svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs><rect x="11" y="3" width="26" height="42" rx="6" fill="#050b1b" stroke="url(#g)" stroke-width="2.5"/><path d="M24 33c-6-4-9-7-9-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 4-3 7-9 11z" fill="url(#g)"/></svg>';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let sb=null;
+try{sb=supabase.createClient(SB_URL,SB_KEY)}catch(e){}
+const S={user:null,key:null,tab:'watch',mode:'login',err:'',devs:[],modal:false,sharing:false,poll:null,beat:null};
+
+/* ---- Encryption: AES-GCM key made from your passphrase, only in this browser ---- */
+const enc=new TextEncoder(),dec=new TextDecoder();
+const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b)));
+const un=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function makeKey(pass,email){
+  const km=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt:enc.encode('phonecare:'+email),iterations:250000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function seal(o){const iv=crypto.getRandomValues(new Uint8Array(12));return b64(iv)+'.'+b64(await crypto.subtle.encrypt({name:'AES-GCM',iv},S.key,enc.encode(JSON.stringify(o))))}
+async function unseal(s){const[i,c]=s.split('.');return JSON.parse(dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:un(i)},S.key,un(c))))}
+
+/* ---- This phone's settings (stay on this phone) ---- */
+const L={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let devId=L.get('pc_id',null);if(!devId){devId=crypto.randomUUID();L.set('pc_id',devId)}
+const cfg=()=>L.get('pc_cfg',{name:'My phone',battery:false,info:false,location:false});
+
+/* ---- Accounts ---- */
+async function auth(){
+  const email=$('#em').value.trim().toLowerCase(),pw=$('#pw').value;S.err='';
+  if(!sb){S.err='Finish setup first.';return render()}
+  const f=S.mode==='register'?sb.auth.signUp({email,password:pw}):sb.auth.signInWithPassword({email,password:pw});
+  const {data,error}=await f;
+  if(error)S.err=error.message;else if(data.session){S.user=data.session.user}else S.err='Check your email to confirm, then log in.';
+  render();
+}
+async function unlock(){
+  const p=$('#pp').value;if(p.length<8){S.err='Use at least 8 characters.';return render()}
+  S.key=await makeKey(p,S.user.email);S.err='';S.tab='watch';startPoll();render();
+}
+async function logout(){await stopShare(true);clearInterval(S.poll);S.key=null;S.user=null;if(sb)await sb.auth.signOut();render()}
+
+/* ---- Phone 1: watch ---- */
+function startPoll(){clearInterval(S.poll);load();S.poll=setInterval(load,15000)}
+async function load(){
+  const {data,error}=await sb.from('reports').select('*');if(error)return;
+  const out=[];
+  for(const r of data){try{out.push({id:r.device_id,at:r.updated_at,p:await unseal(r.payload)})}catch(e){out.push({id:r.device_id,at:r.updated_at,bad:true})}}
+  S.devs=out;if(S.tab==='watch'&&!S.modal)render();
+}
+function watchCard(d){
+  if(d.bad)return `<div class="c"><h3>Unreadable device</h3><p class="m">Wrong passphrase, or this data was encrypted with a different one.</p></div>`;
+  const p=d.p,age=(Date.now()-new Date(d.at))/1000,live=age<120,col=p.battery<=20?'var(--bad)':p.battery<=50?'var(--warn)':'var(--ok)';
+  return `<div class="c"><div class="r"><div><h3>${esc(p.name)}${d.id===devId?' (this phone)':''}</h3><span class="m">Updated ${Math.round(age)}s ago</span></div><span class="chip ${live?'on':''}">${live?'Online':'Offline'}</span></div>
+  ${p.perm.battery&&p.battery!=null?`<div class="r" style="margin-top:12px"><span>Battery${p.charging?' (charging)':''}</span><b>${p.battery}%</b></div><div class="bar"><i style="width:${p.battery}%;background:${col}"></i></div>`:'<p class="m">Battery: not shared by owner.</p>'}
+  ${p.perm.info?`<p class="m">${esc(p.model)}</p>`:'<p class="m">Device info: not shared by owner.</p>'}
+  ${p.perm.location?(p.loc?`<p>Location (±${p.loc.acc} m): <a target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${p.loc.lat}&mlon=${p.loc.lng}#map=16/${p.loc.lat}/${p.loc.lng}">Open map</a></p>`:'<p class="m">Location is on but not available yet.</p>'):'<p class="m">Location: not shared by owner.</p>'}
+  <div class="b"><button class="d" onclick="rm('${esc(d.id)}')">Remove from list</button></div></div>`;
+}
+async function rm(id){if(confirm('Delete this device’s data from the server?')){await sb.from('reports').delete().eq('device_id',id);load()}}
+
+/* ---- Phone 2: share (owner decides everything) ---- */
+async function report(){
+  const c=cfg(),p={name:c.name,perm:{battery:c.battery,info:c.info,location:c.location}};
+  if(c.battery){try{const b=await navigator.getBattery();p.battery=Math.round(b.level*100);p.charging=b.charging}catch(e){}}
+  if(c.info)p.model=(navigator.userAgent.match(/Android[^)]*/)||[navigator.platform])[0];
+  if(c.location)p.loc=await new Promise(r=>navigator.geolocation.getCurrentPosition(x=>r({lat:x.coords.latitude,lng:x.coords.longitude,acc:Math.round(x.coords.accuracy)}),()=>r(null),{timeout:10000}));
+  await sb.from('reports').upsert({device_id:devId,payload:await seal(p),updated_at:new Date().toISOString()},{onConflict:'device_id'});
+}
+async function startShare(){S.sharing=true;S.modal=false;await report();clearInterval(S.beat);S.beat=setInterval(report,30000);render()}
+async function stopShare(quiet){S.sharing=false;clearInterval(S.beat);if(sb&&S.user)await sb.from('reports').delete().eq('device_id',devId);if(!quiet)render()}
+function setPerm(k,on){const c=cfg();c[k]=on;L.set('pc_cfg',c);if(S.sharing)report().then(render);else render()}
+function setName(v){const c=cfg();c.name=v.slice(0,40)||'My phone';L.set('pc_cfg',c);if(S.sharing)report()}
+function perm(k,t,s){return `<div class="perm"><div><b>${t}</b><div class="m">${s}</div></div><label class="sw"><input type="checkbox" aria-label="${t}" ${cfg()[k]?'checked':''} onchange="setPerm('${k}',this.checked)"><span></span></label></div>`}
+
+function render(){
+  const A=$('#app'),hd=sub=>`<header><div class="logo">${LOGO}<div>PHONE CARE<small>${esc(sub)}</small></div></header>`.replace('</div></header>','</div></div></header>');
+  if(!sb){
+    A.innerHTML=`${hd('One-time setup')}<div class="c"><h2>Connect your server</h2><p class="m">Paste the two values from your Supabase project (Project Settings > API). They are saved on this phone only.</p><label for="su">Project URL</label><input id="su" type="text" autocapitalize="off"><label for="sk">anon public key</label><input id="sk" type="text" autocapitalize="off"><div class="b"><button onclick="saveCfg()">Save and continue</button></div></div>`;return}
+  if(!S.user){
+    const reg=S.mode==='register';
+    A.innerHTML=`${hd('Device care, with consent')}<div class="c"><h2>${reg?'Create your account':'Log in'}</h2>
+    <label for="em">Email</label><input id="em" type="email" autocomplete="email"><label for="pw">Password</label><input id="pw" type="password" autocomplete="${reg?'new-password':'current-password'}">
+    <div class="err" role="alert">${esc(S.err)}</div><div class="b"><button onclick="auth()">${reg?'Create account':'Log in'}</button><button class="g" onclick="S.mode='${reg?'login':'register'}';S.err='';render()">${reg?'I have an account':'Create account'}</button></div></div>`;return}
+  if(!S.key){
+    A.innerHTML=`${hd(S.user.email)}<div class="c"><h2>Encryption passphrase</h2><p class="m">Use the same passphrase on every phone. It never leaves this phone, so nobody (including us) can read your data without it, and it can’t be reset.</p>
+    <label for="pp">Passphrase</label><input id="pp" type="password" autocomplete="off"><div class="err" role="alert">${esc(S.err)}</div><div class="b"><button onclick="unlock()">Unlock</button><button class="g" onclick="logout()">Log out</button></div></div>`;return}
+  let body='';
+  if(S.tab==='watch')body=`<h2>Devices</h2>${S.devs.length?S.devs.map(watchCard).join(''):'<div class="c"><p>No phones are sharing yet.</p><p class="m">On the phone you want to see, open “Share this phone”.</p></div>'}`;
+  else if(S.tab==='share')body=`${S.sharing?'<div class="ban" role="status">Sharing is ON. The data below is being sent, encrypted, to your other phones.</div>':''}<h2>Share this phone</h2><div class="c">
+    <label for="nm">Name shown on your other phones</label><input id="nm" type="text" maxlength="40" value="${esc(cfg().name)}" onchange="setName(this.value)">
+    ${perm('battery','Battery status','Level and charging.')}${perm('info','Device info','Model and Android version.')}${perm('location','Location','Your browser asks too.')}
+    <div class="b">${S.sharing?'<button class="d" onclick="stopShare()">Stop sharing and delete data</button>':'<button onclick="S.modal=true;render()">Start sharing</button>'}</div></div>`;
+  else body=`<h2>Privacy</h2><div class="c"><h3>What PHONE CARE never does</h3><ul><li>No hidden tracking.</li><li>No call recording.</li><li>No camera or microphone access.</li><li>No reading messages, photos or apps.</li></ul></div>
+    <div class="c"><h3>How your data is protected</h3><p class="m">Data is encrypted on this phone with your passphrase (AES-256) before upload. The server stores only scrambled text and keeps just the latest report per phone. Stopping sharing deletes it.</p><div class="b"><button class="g" onclick="logout()">Log out</button></div></div>`;
+  const mo=S.modal?`<div class="mo" role="dialog" aria-modal="true"><div class="c"><h3>Start sharing this phone?</h3><ul><li>Only the items you switched on are sent.</li><li>It works only while this page stays open.</li><li>A green banner shows while sharing is on.</li><li>You can stop any time and the data is deleted.</li></ul><div class="b"><button onclick="startShare()">I agree, start sharing</button><button class="g" onclick="S.modal=false;render()">Cancel</button></div></div></div>`:'';
+  A.innerHTML=`${hd(S.user.email)}${body}<nav>${[['watch','Watch'],['share','Share this phone'],['priv','Privacy']].map(([k,t])=>`<button class="${S.tab===k?'a':''}" onclick="S.tab='${k}';render()">${t}</button>`).join('')}</nav>${mo}`;
+}
+render();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
